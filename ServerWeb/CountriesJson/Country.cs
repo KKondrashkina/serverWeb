@@ -1,6 +1,4 @@
-﻿using Excel;
-
-namespace CountriesJson
+﻿namespace CountriesJson
 {
     public class Country
     {

@@ -1,4 +1,4 @@
-﻿namespace Excel
+﻿namespace CountriesJson
 {
     public class Translations
     {
