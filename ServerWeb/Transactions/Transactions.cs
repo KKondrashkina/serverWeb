@@ -16,7 +16,7 @@ namespace Transactions
                 var transaction = connection.BeginTransaction();
                 try
                 {
-                    var sql = "INSERT INTO Category(Name) VALUES(N'Goods for pets')";
+                    var sql = "INSERT INTO Category(Name) VALUES(N'Household chemicals')";
 
                     var command = new SqlCommand(sql, connection)
                     {
@@ -26,10 +26,8 @@ namespace Transactions
                     command.ExecuteNonQuery();
 
                     throw new Exception("Error");
-
-                    transaction.Commit();
                 }
-                catch (Exception ex)
+                catch
                 {
                     transaction.Rollback();
                 }

@@ -1,6 +1,7 @@
 ﻿using OfficeOpenXml;
 using System.Collections.Generic;
 using System.IO;
+using OfficeOpenXml.Style;
 
 namespace Excel
 {
@@ -29,16 +30,16 @@ namespace Excel
             {
                 var worksheet = excelPackage.Workbook.Worksheets.Add("Sheet 1");
                 worksheet.Cells["A1"].LoadFromCollection(persons, true);
+                worksheet.Row(1).Style.Font.Bold = true;
 
                 var cells = worksheet.Cells[worksheet.Dimension.Address];
-                cells.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-                cells.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-                cells.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-                cells.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-
+                cells.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                cells.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                cells.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                cells.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                cells.AutoFitColumns();
 
                 var file = new FileInfo("PersonsTable.xlsx");
-
                 excelPackage.SaveAs(file);
             }
         }
