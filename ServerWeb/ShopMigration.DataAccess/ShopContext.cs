@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.IO;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using ShopMigration.DataAccess.Model;
 
 namespace ShopMigration.DataAccess
@@ -13,10 +15,17 @@ namespace ShopMigration.DataAccess
 
         public DbSet<Order> Orders { get; set; }
 
-        public ShopContext(DbContextOptions<ShopContext> options)
-            : base(options)
+       
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //Database.EnsureCreated();
+            var builder = new ConfigurationBuilder();
+            builder.SetBasePath(Directory.GetCurrentDirectory());
+            builder.AddJsonFile("appsettings.json");
+
+            var config = builder.Build();
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            optionsBuilder.UseSqlServer(connectionString, x => x.MigrationsAssembly("ShopMigration.DataAccess"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -17,6 +17,9 @@ namespace ShopMigration.DataAccess.Model
         [EmailAddress]
         public string Email { get; set; }
 
+        [MaxLength(20)]
+        public string BirthDay { get; set; }
+
         public virtual ICollection<Order> Orders { get; set; } =
             new List<Order>();
     }
