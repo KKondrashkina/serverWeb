@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopMigration", "ShopMigrat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopMigration.DataAccess", "ShopMigration.DataAccess\ShopMigration.DataAccess.csproj", "{45842CD6-2733-4F6A-896F-937F12403EA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopUnitOfWork", "ShopUnitOfWork\ShopUnitOfWork.csproj", "{10BBC3C4-1F6F-4391-9E9A-0CACCD7FDE4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{45842CD6-2733-4F6A-896F-937F12403EA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45842CD6-2733-4F6A-896F-937F12403EA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45842CD6-2733-4F6A-896F-937F12403EA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10BBC3C4-1F6F-4391-9E9A-0CACCD7FDE4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10BBC3C4-1F6F-4391-9E9A-0CACCD7FDE4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10BBC3C4-1F6F-4391-9E9A-0CACCD7FDE4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10BBC3C4-1F6F-4391-9E9A-0CACCD7FDE4E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
