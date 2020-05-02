@@ -7,7 +7,7 @@ namespace VectorsTest
     public class VectorsTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void TestAddition()
         {
             var vector1 = new Vector(new double[] { 1, 1, 1, 1 });
             var vector2 = new Vector(new double[] { 10, 10 });
@@ -18,27 +18,7 @@ namespace VectorsTest
         }
 
         [TestMethod]
-        public void TestMethod2()
-        {
-            var vector1 = new Vector(new double[] { 1, 1, 1, 1 });
-            var vector2 = new Vector(new double[] { 10, 10 });
-
-            vector1.AddVector(vector2);
-
-            Assert.AreEqual(new Vector(new double[] { 11, 11 }), vector1);
-        }
-
-        [TestMethod]
-        public void TestMethod3()
-        {
-            var vector1 = new Vector(new double[] { 1, 1, 1, 1 });
-            var vector2 = new Vector(new double[] { 10, 10 });
-
-            Assert.AreEqual(2, Vector.MultiplyVectors(vector1, vector2));
-        }
-
-        [TestMethod]
-        public void TestMethod4()
+        public void TestScalarMultiplication()
         {
             var vector1 = new Vector(new double[] { 1, 1, 1, 1 });
             var vector2 = new Vector(new double[] { 5, 5, 5, 5 });
