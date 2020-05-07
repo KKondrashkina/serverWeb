@@ -15,83 +15,142 @@ namespace Shop
             {
                 connection.Open();
 
-                var sql1 = "SELECT COUNT(*) FROM Product";
+                var productCountSql = "SELECT COUNT(*) FROM Product";
 
-                using (var command = new SqlCommand(sql1, connection))
+                using (var command = new SqlCommand(productCountSql, connection))
                 {
                     Console.WriteLine("Количество товаров = " + (int)command.ExecuteScalar());
                 }
 
-                var sql2 = "INSERT INTO Category(Name) VALUES(N'Meat products')";
+                var newCategorySql = "INSERT INTO Category(Name) " +
+                           "VALUES(@name)";
 
-                using (var command = new SqlCommand(sql2, connection))
+                using (var command = new SqlCommand(newCategorySql, connection))
                 {
-                    command.ExecuteNonQuery();
-                }
+                    var name = "Meat products";
 
-                var sql3 = "INSERT INTO Product(Name, Price, CategoryId) VALUES(N'Pepperoni', 987, 6)";
-
-                using (var command = new SqlCommand(sql3, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-                var sql4 = "UPDATE Product SET Price = 70 WHERE Name = 'Bananas'";
-
-                using (var command = new SqlCommand(sql4, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-                var sql5 = "DELETE Product WHERE Price < 50";
-
-                using (var command = new SqlCommand(sql5, connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-                var sql6 = "SELECT Product.Name, Product.Price, Category.Name FROM Product INNER JOIN Category ON Product.CategoryId=Category.Id";
-
-                using (var command = new SqlCommand(sql6, connection))
-                {
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    if (reader.HasRows)
+                    command.Parameters.Add(new SqlParameter("@name", name)
                     {
-                        while (reader.Read())
+                        SqlDbType = SqlDbType.NVarChar
+                    });
+
+                    command.ExecuteNonQuery();
+                }
+
+                var newProductSql = "INSERT INTO Product(Name, Price, CategoryId) " +
+                           "VALUES(@name, @price, @categoryId)";
+
+                using (var command = new SqlCommand(newProductSql, connection))
+                {
+                    var name = "Pepperoni";
+                    var price = 987;
+                    var categoryId = 6;
+
+                    command.Parameters.AddRange(new[]
+                    {
+                        new SqlParameter("@name", name)
                         {
-                            Console.WriteLine("{0}\t\t{1}\t{2}", reader.GetString(0), reader.GetInt32(1), reader.GetString(2));
+                            SqlDbType = SqlDbType.NVarChar
+                        },
+                        new SqlParameter("@price", price)
+                        {
+                            SqlDbType = SqlDbType.Int
+                        },
+                        new SqlParameter("@categoryId", categoryId)
+                        {
+                            SqlDbType = SqlDbType.Int
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found.");
-                    }
+                    });
+
+                    command.ExecuteNonQuery();
                 }
 
-                var sql7 = "SELECT Product.Name, Product.Price, Category.Name FROM Product INNER JOIN Category ON Product.CategoryId=Category.Id";
+                var newPriceSql = "UPDATE Product " +
+                           "SET Price = @price " +
+                           "WHERE Name = @name";
 
-                using (var command = new SqlCommand(sql7, connection))
+                using (var command = new SqlCommand(newPriceSql, connection))
                 {
-                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    var name = "Bananas";
+                    var price = 70;
 
-                    DataSet dataSet = new DataSet();
-
-                    adapter.Fill(dataSet);
-
-                    foreach (DataTable dataTable in dataSet.Tables)
+                    command.Parameters.AddRange(new[]
                     {
-                        foreach (DataRow row in dataTable.Rows)
+                        new SqlParameter("@name", name)
                         {
-                            var cells = row.ItemArray;
+                            SqlDbType = SqlDbType.NVarChar
+                        },
+                        new SqlParameter("@price", price)
+                        {
+                            SqlDbType = SqlDbType.Int
+                        }
+                    });
 
-                            foreach (object cell in cells)
+                    command.ExecuteNonQuery();
+                }
+
+                var productRemovingSql = "DELETE Product " +
+                           "WHERE Price < @price";
+
+                using (var command = new SqlCommand(productRemovingSql, connection))
+                {
+                    var price = 50;
+
+                    command.Parameters.Add(new SqlParameter("@price", price)
+                    {
+                        SqlDbType = SqlDbType.Int
+                    });
+
+                    command.ExecuteNonQuery();
+                }
+
+                var allProductsWithCategorySql = "SELECT Product.Name, Product.Price, Category.Name " +
+                           "FROM Product " +
+                           "INNER JOIN Category " +
+                           "ON Product.CategoryId = Category.Id";
+
+                using (var command = new SqlCommand(allProductsWithCategorySql, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
                             {
-                                Console.Write("{0}\t", cell);
+                                Console.WriteLine("{0}\t\t{1}\t{2}", reader.GetString(0), reader.GetInt32(1),
+                                    reader.GetString(2));
                             }
-
-                            Console.WriteLine();
                         }
+                        else
+                        {
+                            Console.WriteLine("No rows found.");
+                        }
+                    }
+                }
+
+                using (var command = new SqlCommand(allProductsWithCategorySql, connection))
+                {
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        var dataSet = new DataSet();
+
+                        adapter.Fill(dataSet);
+
+                        foreach (DataTable dataTable in dataSet.Tables)
+                        {
+                            foreach (DataRow row in dataTable.Rows)
+                            {
+                                var cells = row.ItemArray;
+
+                                foreach (var cell in cells)
+                                {
+                                    Console.Write("{0}\t", cell);
+                                }
+
+                                Console.WriteLine();
+                            }
+                        }
+
                     }
                 }
             }
