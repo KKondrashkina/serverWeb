@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ShopUnitOfWork.Model
 {
@@ -7,8 +7,9 @@ namespace ShopUnitOfWork.Model
     {
         public int Id { get; set; }
 
-        [MaxLength(20)]
-        public string Date { get; set; }
+        public DateTime? Date { get; set; }
+
+        public int CustomerId { get; set; }
 
         public virtual Customer Customer { get; set; }
 

@@ -25,7 +25,9 @@ namespace ShopUnitOfWork.RepositoryClasses
 
         public List<string> GetProductsNames()
         {
-            return dbSet.Select(p => p.Name).ToList();
+            return dbSet
+                .Select(p => p.Name)
+                .ToList();
         }
 
         public Product GetProductByName(string name)
@@ -35,15 +37,15 @@ namespace ShopUnitOfWork.RepositoryClasses
 
         public int GetMostPurchasedProductId()
         {
-            var products3 = dbSet.Include(p => p.ProductOrders).ToList();
-            var productsIds = new List<int>();
+            var productsIds = dbSet
+                        .Include(p => p.ProductOrders)
+                        .SelectMany(p => p.ProductOrders)
+                        .Select(p => p.ProductId)
+                        .ToList();
 
-            foreach (var r in products3)
-            {
-                productsIds.AddRange(r.ProductOrders.Select(p => p.ProductId));
-            }
-
-            return productsIds.GroupBy(p => p).OrderByDescending(o => o.Count()).FirstOrDefault().Key;
+            return productsIds
+                .GroupBy(p => p)
+                .OrderByDescending(o => o.Count()).FirstOrDefault().Key;
         }
     }
 }

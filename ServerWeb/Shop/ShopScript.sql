@@ -5,9 +5,9 @@ USE [Shop];
 
 CREATE TABLE [dbo].[Category]
 (
-	[Id] [INT] IDENTITY(1, 1) PRIMARY KEY NOT NULL,
-	[Name] [NVARCHAR](50) NOT NULL
-)
+	[Id] INT IDENTITY(1, 1) PRIMARY KEY NOT NULL,
+	[Name] NVARCHAR(50) NOT NULL
+);
 
 INSERT INTO [dbo].[Category]
            ([Name])
@@ -15,17 +15,17 @@ INSERT INTO [dbo].[Category]
 			(N'Vegetables'),
 			(N'Dairy products'),
 			(N'Drinks'),
-			(N'Grocery')	 
+			(N'Grocery');	 
 	 
 	 
 CREATE TABLE [dbo].[Product]
 (
-	[Id] [INT] IDENTITY(1, 1) PRIMARY KEY NOT NULL,
-	[Name] [NVARCHAR](50) NOT NULL,
-	[Price] [INT] NOT NULL,
-	[CategoryId] [INT] NOT NULL
+	[Id] INT IDENTITY(1, 1) PRIMARY KEY NOT NULL,
+	[Name] NVARCHAR(50) NOT NULL,
+	[Price] INT NOT NULL,
+	[CategoryId] INT NOT NULL,
 	FOREIGN KEY([CategoryId]) REFERENCES [dbo].[Category] ([Id])
-)
+);
 
 INSERT INTO [dbo].[Product]
            ([Name]
@@ -40,4 +40,4 @@ INSERT INTO [dbo].[Product]
 			(N'Juice', 72, 4),
 			(N'Water', 23, 4),
 			(N'Rice', 74, 5),
-			(N'Pears', 89, 1)
+			(N'Pears', 89, 1);

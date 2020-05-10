@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShopEF.Entities;
 
 namespace ShopEF
 {
@@ -44,6 +45,63 @@ namespace ShopEF
                 .HasOne(po => po.Category)
                 .WithMany(c => c.ProductCategories)
                 .HasForeignKey(pc => pc.CategoryId);
+
+            modelBuilder.Entity<Category>()
+                .Property(p => p.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            modelBuilder.Entity<Customer>()
+                .Property(p => p.FullName)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            modelBuilder.Entity<Customer>()
+                .Property(p => p.PhoneNumber)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            modelBuilder.Entity<Customer>()
+                .Property(p => p.Email)
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<Order>()
+                .Property(p => p.CustomerId)
+                .IsRequired();
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            modelBuilder.Entity<Product>()
+               .Property(p => p.Price)
+               .IsRequired();
+
+            modelBuilder.Entity<ProductCategory>()
+                .Property(p => p.ProductId)
+                .IsRequired();
+
+            modelBuilder.Entity<ProductCategory>()
+                .Property(p => p.CategoryId)
+                .IsRequired();
+
+            modelBuilder.Entity<ProductOrder>()
+               .Property(p => p.ProductId)
+               .IsRequired();
+
+            modelBuilder.Entity<ProductOrder>()
+                .Property(p => p.OrderId)
+                .IsRequired();
+
+            modelBuilder.Entity<ProductOrder>()
+                .Property(p => p.ProductCount)
+                .IsRequired();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLazyLoadingProxies();
         }
     }
 }

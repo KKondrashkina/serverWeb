@@ -8,7 +8,5 @@ namespace ShopUnitOfWork.RepositoryInterfaces
         List<Order> GetOrdersWithProducts();
 
         List<Product> GetOrderProductsMoreExpensiveThan(double price, Order o);
-
-        List<Order> GetOrdersWithProductsAndCustomers();
     }
 }

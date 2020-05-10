@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
 
-namespace ShopEF
+namespace ShopEF.Entities
 {
-    class Order
+    public class Order
     {
         public int Id { get; set; }
 
-        [MaxLength(20)]
-        public string Date { get; set; }
+        public DateTime? Date { get; set; }
+
+        public int CustomerId { get; set; }
 
         public virtual Customer Customer { get; set; }
 

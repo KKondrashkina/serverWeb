@@ -55,14 +55,16 @@ namespace ShopUnitOfWork
                 uow.Save();
 
                 var orderRepository = uow.GetRepository<IOrderRepository>();
-
-                var order1 = new Order { Date = "21.21.19", Customer = customer1 };
-                var order2 = new Order { Date = "01.01.20", Customer = customer2 };
-                orderRepository.AddRange(new List<Order> { order1, order2 });
+               
+                var order1 = new Order { Date = new DateTime(2019, 12, 12), CustomerId = customer1.Id, Customer = customer1 };
+                var order2 = new Order { Date = new DateTime(2020, 3, 4), CustomerId = customer2.Id, Customer = customer2 };
+                var order3 = new Order { Date = new DateTime(2019, 12, 11), CustomerId = customer1.Id, Customer = customer1 };
+                orderRepository.AddRange(new List<Order> { order1, order2, order3 });
                 uow.Save();
 
                 productRepository.AddProductToOrder(product1, order1);
                 productRepository.AddProductToOrder(product1, order2);
+                productRepository.AddProductToOrder(product1, order3);
                 productRepository.AddProductToOrder(product2, order2);
                 productRepository.AddProductToOrder(product3, order1);
                 productRepository.AddProductToOrder(product4, order2);
@@ -164,21 +166,31 @@ namespace ShopUnitOfWork
 
                 // __________________________________________________________________________________________________________
 
-                var orders2 = orderRepository.GetOrdersWithProductsAndCustomers();
+                var customers = customerRepository.GetCustomersWithOrders();
 
-                foreach (var o in orders2)
+                foreach (var c in customers)
                 {
-                    Console.WriteLine($"Покупатель: {o.Customer.FullName}");
+                    Console.WriteLine($"Покупатель: {c.FullName}");
 
-                    var products1 = o.ProductOrders.Select(po => po.Product).Select(p => p.Price).ToList();
-                    var moneySpent = products1.Sum();
+                    var sum = 0;
+                    var orders = c.Orders
+                        .Select(p => p.ProductOrders)
+                        .SelectMany(order => order)
+                        .ToList();
 
-                    Console.WriteLine($"Потрачено денег: {moneySpent} рубля");
+                    foreach (var p in orders)
+                    {
+                        var price = p.Product.Price;
+                        var count = p.ProductCount;
+                        sum += price * count;
+                    }
+
+                    Console.WriteLine($"Потрачено денег: {sum} рубля");
                     Console.WriteLine();
-                }
+                }            
 
                 Console.WriteLine("__________________________________________");
-                Console.WriteLine();
+                Console.WriteLine();                
 
                 // __________________________________________________________________________________________________________
 
@@ -189,7 +201,10 @@ namespace ShopUnitOfWork
                     Console.WriteLine($"Категория: {c.Name}");
 
                     var products = c.ProductCategories;
-                    var productsCount = products.Select(p => p.Product.ProductOrders).Select(o => o.Count).Sum();
+                    var productsCount = products
+                        .Select(p => p.Product.ProductOrders)
+                        .Select(o => o.Count)
+                        .Sum();
 
                     Console.WriteLine($"Продуктов куплено: {productsCount}");
                     Console.WriteLine();

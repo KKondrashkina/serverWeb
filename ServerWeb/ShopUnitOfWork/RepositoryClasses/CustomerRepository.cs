@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShopUnitOfWork.Model;
 using ShopUnitOfWork.RepositoryInterfaces;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ShopUnitOfWork.RepositoryClasses
 {
@@ -10,5 +12,14 @@ namespace ShopUnitOfWork.RepositoryClasses
         {
 
         }
+
+        public List<Customer> GetCustomersWithOrders()
+        {
+            return dbSet
+                .Include(c => c.Orders)
+                .ThenInclude(o => o.ProductOrders)
+                .ThenInclude(po => po.Product)
+                .ToList();
+        }        
     }
 }

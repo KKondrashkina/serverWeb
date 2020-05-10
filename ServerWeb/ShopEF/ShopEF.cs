@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using ShopEF.Entities;
 
 namespace ShopEF
 {
@@ -60,23 +61,28 @@ namespace ShopEF
                 db.Customers.AddRange(new List<Customer> { customer1, customer2 });
                 db.SaveChanges();
 
-                var order1 = new Order { Date = "21.21.19", Customer = customer1 };
-                var order2 = new Order { Date = "01.01.20", Customer = customer2 };
-                db.Orders.AddRange(new List<Order> { order1, order2 });
+                var order1 = new Order { Date = new DateTime(2019, 12, 12), CustomerId = customer1.Id, Customer = customer1 };
+                var order2 = new Order { Date = new DateTime(2020, 3, 4), CustomerId = customer2.Id, Customer = customer2 };
+                var order3 = new Order { Date = new DateTime(2019, 12, 11), CustomerId = customer1.Id, Customer = customer1 };
+                db.Orders.AddRange(new List<Order> { order1, order2, order3 });
                 db.SaveChanges();
 
-                product1.ProductOrders.Add(new ProductOrder { ProductId = product1.Id, OrderId = order1.Id });
-                product1.ProductOrders.Add(new ProductOrder { ProductId = product1.Id, OrderId = order2.Id });
-                product2.ProductOrders.Add(new ProductOrder { ProductId = product2.Id, OrderId = order2.Id });
-                product3.ProductOrders.Add(new ProductOrder { ProductId = product3.Id, OrderId = order1.Id });
-                product4.ProductOrders.Add(new ProductOrder { ProductId = product4.Id, OrderId = order2.Id });
-                product5.ProductOrders.Add(new ProductOrder { ProductId = product5.Id, OrderId = order1.Id });
-                product6.ProductOrders.Add(new ProductOrder { ProductId = product6.Id, OrderId = order2.Id });
+                product1.ProductOrders.Add(new ProductOrder { ProductId = product1.Id, ProductCount = 1, OrderId = order1.Id });
+                product1.ProductOrders.Add(new ProductOrder { ProductId = product1.Id, ProductCount = 2, OrderId = order2.Id });
+                product1.ProductOrders.Add(new ProductOrder { ProductId = product1.Id, ProductCount = 1, OrderId = order3.Id });
+                product2.ProductOrders.Add(new ProductOrder { ProductId = product2.Id, ProductCount = 3, OrderId = order2.Id });
+                product3.ProductOrders.Add(new ProductOrder { ProductId = product3.Id, ProductCount = 4, OrderId = order1.Id });
+                product4.ProductOrders.Add(new ProductOrder { ProductId = product4.Id, ProductCount = 5, OrderId = order2.Id });
+                product5.ProductOrders.Add(new ProductOrder { ProductId = product5.Id, ProductCount = 6, OrderId = order1.Id });
+                product6.ProductOrders.Add(new ProductOrder { ProductId = product6.Id, ProductCount = 7, OrderId = order2.Id });
                 db.SaveChanges();
 
                 // __________________________________________________________________________________________________________
 
-                var orders1 = db.Orders.Include(o => o.ProductOrders).ThenInclude(po => po.Product).ToList();
+                var orders1 = db.Orders
+                    .Include(o => o.ProductOrders)
+                    .ThenInclude(po => po.Product)
+                    .ToList();
 
                 Console.WriteLine("Продукты дороже 100 рублей с датой заказа: ");
 
@@ -84,7 +90,10 @@ namespace ShopEF
                 {
                     Console.WriteLine($"Дата закака: {o.Date}");
 
-                    var products1 = o.ProductOrders.Select(po => po.Product).Where(p => p.Price > 100).ToList();
+                    var products1 = o.ProductOrders
+                        .Select(po => po.Product)
+                        .Where(p => p.Price > 100)
+                        .ToList();
 
                     foreach (var p in products1)
                     {
@@ -115,7 +124,9 @@ namespace ShopEF
 
                 // __________________________________________________________________________________________________________
 
-                var products2 = db.Products.Select(p => p.Name).ToList();
+                var products2 = db.Products
+                    .Select(p => p.Name)
+                    .ToList();
 
                 Console.WriteLine("Товары в наличии:");
 
@@ -129,7 +140,9 @@ namespace ShopEF
                 db.Products.Remove(removedProduct);
                 db.SaveChanges();
 
-                var productsAfterSale = db.Products.Select(p => p.Name).ToList();
+                var productsAfterSale = db.Products
+                    .Select(p => p.Name)
+                    .ToList();
 
                 Console.WriteLine("Товары в наличии после распродажи:");
 
@@ -143,15 +156,16 @@ namespace ShopEF
 
                 // __________________________________________________________________________________________________________
 
-                var products3 = db.Products.Include(p => p.ProductOrders).ToList();
-                var productsIds = new List<int>();
+                var productsIds = db.Products
+                    .Include(p => p.ProductOrders)
+                    .SelectMany(p => p.ProductOrders)
+                    .Select(p => p.ProductId)
+                    .ToList();
 
-                foreach (var r in products3)
-                {
-                    productsIds.AddRange(r.ProductOrders.Select(p => p.ProductId));
-                }
-
-                var productId = productsIds.GroupBy(p => p).OrderByDescending(o => o.Count()).FirstOrDefault().Key;
+                var productId = productsIds
+                    .GroupBy(p => p)
+                    .OrderByDescending(o => o.Count())
+                    .FirstOrDefault().Key;
 
                 Console.WriteLine("Самый часто покупаемый товар:");
 
@@ -164,33 +178,49 @@ namespace ShopEF
 
                 // __________________________________________________________________________________________________________
 
-                var orders2 = db.Orders.Include(o => o.ProductOrders).ThenInclude(po => po.Product).Include(c => c.Customer).ToList(); ;
+                var customers = db.Customers
+                    .Include(c => c.Orders)
+                    .ThenInclude(o => o.ProductOrders)
+                    .ThenInclude(po => po.Product)
+                    .ToList();
 
-                foreach (var o in orders2)
+                foreach (var c in customers)
                 {
-                    Console.WriteLine($"Покупатель: {o.Customer.FullName}");
+                    Console.WriteLine($"Покупатель: {c.FullName}");
 
-                    var products1 = o.ProductOrders.Select(po => po.Product).Select(p => p.Price).ToList();
-                    var moneySpent = products1.Sum();
+                    var sum = 0;
+                    var orders = c.Orders
+                        .Select(p => p.ProductOrders)
+                        .SelectMany(order => order)
+                        .ToList();
 
-                    Console.WriteLine($"Потрачено денег: {moneySpent} рубля");
+                    foreach (var p in orders)
+                    {
+                        var price = p.Product.Price;
+                        var count = p.ProductCount;
+                        sum += price * count;
+                    }
+
+                    Console.WriteLine($"Потрачено денег: {sum} рубля");
                     Console.WriteLine();
                 }
 
-                Console.WriteLine("__________________________________________");
-                Console.WriteLine();
-
                 // __________________________________________________________________________________________________________
 
-                var categories = db.Categories.Include(c => c.ProductCategories).ThenInclude(pc => pc.Product)
-                    .ThenInclude(p => p.ProductOrders);
+                var categories = db.Categories
+                     .Include(c => c.ProductCategories)
+                     .ThenInclude(pc => pc.Product)
+                     .ThenInclude(p => p.ProductOrders);
 
                 foreach (var c in categories)
                 {
                     Console.WriteLine($"Категория: {c.Name}");
 
                     var products = c.ProductCategories;
-                    var productsCount = products.Select(p => p.Product.ProductOrders).Select(o => o.Count).Sum();
+                    var productsCount = products
+                        .Select(p => p.Product.ProductOrders)
+                        .Select(o => o.Count)
+                        .Sum();
 
                     Console.WriteLine($"Продуктов куплено: {productsCount}");
                     Console.WriteLine();

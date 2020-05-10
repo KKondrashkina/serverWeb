@@ -11,21 +11,32 @@ namespace ShopMigration
         {
             using (var db = new ShopContext())
             {
-                var orders2 = db.Orders.Include(o => o.ProductOrders).ThenInclude(po => po.Product).Include(c => c.Customer).ToList(); ;
+                var customers = db.Customers
+                    .Include(c => c.Orders)
+                    .ThenInclude(o => o.ProductOrders)
+                    .ThenInclude(po => po.Product)
+                    .ToList();
 
-                foreach (var o in orders2)
+                foreach (var c in customers)
                 {
-                    Console.WriteLine($"Покупатель: {o.Customer.FullName}");
+                    Console.WriteLine($"Покупатель: {c.FullName}");
 
-                    var products1 = o.ProductOrders.Select(po => po.Product).Select(p => p.Price).ToList();
-                    var moneySpent = products1.Sum();
+                    var sum = 0;
+                    var orders = c.Orders
+                        .Select(p => p.ProductOrders)
+                        .SelectMany(order => order)
+                        .ToList();
 
-                    Console.WriteLine($"Потрачено денег: {moneySpent} рубля");
+                    foreach (var p in orders)
+                    {
+                        var price = p.Product.Price;
+                        var count = p.ProductCount;
+                        sum += price * count;
+                    }
+
+                    Console.WriteLine($"Потрачено денег: {sum} рубля");
                     Console.WriteLine();
                 }
-
-                Console.WriteLine("__________________________________________");
-                Console.WriteLine();
             }
         }
     }
