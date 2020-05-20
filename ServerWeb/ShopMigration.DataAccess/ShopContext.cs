@@ -32,9 +32,6 @@ namespace ShopMigration.DataAccess
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ProductOrder>()
-                .HasKey(k => new { k.ProductId, k.OrderId });
-
-            modelBuilder.Entity<ProductOrder>()
                 .HasOne(po => po.Product)
                 .WithMany(p => p.ProductOrders)
                 .HasForeignKey(po => po.ProductId);
@@ -45,9 +42,6 @@ namespace ShopMigration.DataAccess
                 .HasForeignKey(po => po.OrderId);
 
             modelBuilder.Entity<ProductCategory>()
-                .HasKey(k => new { k.ProductId, k.CategoryId });
-
-            modelBuilder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
                 .WithMany(p => p.ProductCategories);
 
@@ -55,10 +49,11 @@ namespace ShopMigration.DataAccess
                 .HasOne(po => po.Category)
                 .WithMany(c => c.ProductCategories)
                 .HasForeignKey(pc => pc.CategoryId);
+
             modelBuilder.Entity<Category>()
-                    .Property(p => p.Name)
-                    .HasMaxLength(100)
-                    .IsRequired();
+                .Property(p => p.Name)
+                .HasMaxLength(100)
+                .IsRequired();
 
             modelBuilder.Entity<Customer>()
                 .Property(p => p.FullName)
@@ -74,37 +69,9 @@ namespace ShopMigration.DataAccess
                 .Property(p => p.Email)
                 .HasMaxLength(50);
 
-            modelBuilder.Entity<Order>()
-                .Property(p => p.CustomerId)
-                .IsRequired();
-
             modelBuilder.Entity<Product>()
                 .Property(p => p.Name)
                 .HasMaxLength(100)
-                .IsRequired();
-
-            modelBuilder.Entity<Product>()
-               .Property(p => p.Price)
-               .IsRequired();
-
-            modelBuilder.Entity<ProductCategory>()
-                .Property(p => p.ProductId)
-                .IsRequired();
-
-            modelBuilder.Entity<ProductCategory>()
-                .Property(p => p.CategoryId)
-                .IsRequired();
-
-            modelBuilder.Entity<ProductOrder>()
-               .Property(p => p.ProductId)
-               .IsRequired();
-
-            modelBuilder.Entity<ProductOrder>()
-                .Property(p => p.OrderId)
-                .IsRequired();
-
-            modelBuilder.Entity<ProductOrder>()
-                .Property(p => p.ProductCount)
                 .IsRequired();
         }
     }

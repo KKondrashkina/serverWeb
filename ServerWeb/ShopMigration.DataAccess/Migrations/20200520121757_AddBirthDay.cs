@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ShopMigration.DataAccess.Migrations
 {
-    public partial class AddBirthDate : Migration
+    public partial class AddBirthDay : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AddColumn<DateTime>(
                 name: "BirthDay",
                 table: "Customers",
-                maxLength: 20,
                 nullable: true);
         }
 

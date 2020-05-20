@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ShopMigration.DataAccess.Model
 {
@@ -12,7 +13,7 @@ namespace ShopMigration.DataAccess.Model
 
         public string Email { get; set; }
 
-        public string BirthDay { get; set; }
+        public DateTime? BirthDay { get; set; }
 
         public virtual ICollection<Order> Orders { get; set; } =
             new List<Order>();
