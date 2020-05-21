@@ -22,9 +22,6 @@ namespace ShopEF
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ProductOrder>()
-                .HasKey(k => new { k.ProductId, k.OrderId });
-
-            modelBuilder.Entity<ProductOrder>()
                 .HasOne(po => po.Product)
                 .WithMany(p => p.ProductOrders)
                 .HasForeignKey(po => po.ProductId);
@@ -33,10 +30,7 @@ namespace ShopEF
                 .HasOne(po => po.Order)
                 .WithMany(o => o.ProductOrders)
                 .HasForeignKey(po => po.OrderId);
-
-            modelBuilder.Entity<ProductCategory>()
-                .HasKey(k => new { k.ProductId, k.CategoryId });
-
+                
             modelBuilder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
                 .WithMany(p => p.ProductCategories);
@@ -65,37 +59,9 @@ namespace ShopEF
                 .Property(p => p.Email)
                 .HasMaxLength(50);
 
-            modelBuilder.Entity<Order>()
-                .Property(p => p.CustomerId)
-                .IsRequired();
-
             modelBuilder.Entity<Product>()
                 .Property(p => p.Name)
                 .HasMaxLength(100)
-                .IsRequired();
-
-            modelBuilder.Entity<Product>()
-               .Property(p => p.Price)
-               .IsRequired();
-
-            modelBuilder.Entity<ProductCategory>()
-                .Property(p => p.ProductId)
-                .IsRequired();
-
-            modelBuilder.Entity<ProductCategory>()
-                .Property(p => p.CategoryId)
-                .IsRequired();
-
-            modelBuilder.Entity<ProductOrder>()
-               .Property(p => p.ProductId)
-               .IsRequired();
-
-            modelBuilder.Entity<ProductOrder>()
-                .Property(p => p.OrderId)
-                .IsRequired();
-
-            modelBuilder.Entity<ProductOrder>()
-                .Property(p => p.ProductCount)
                 .IsRequired();
         }
 
