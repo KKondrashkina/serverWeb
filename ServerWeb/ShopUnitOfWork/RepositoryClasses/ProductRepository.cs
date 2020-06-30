@@ -25,19 +25,19 @@ namespace ShopUnitOfWork.RepositoryClasses
 
         public List<string> GetProductsNames()
         {
-            return dbSet
+            return DbSet
                 .Select(p => p.Name)
                 .ToList();
         }
 
         public Product GetProductByName(string name)
         {
-            return dbSet.FirstOrDefault(p => p.Name == name);
+            return DbSet.FirstOrDefault(p => p.Name == name);
         }
 
         public int GetMostPurchasedProductId()
         {
-            var productsIds = dbSet
+            var productsIds = DbSet
                         .Include(p => p.ProductOrders)
                         .SelectMany(p => p.ProductOrders)
                         .Select(p => p.ProductId)

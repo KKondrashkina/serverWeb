@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Storage;
 using ShopUnitOfWork.RepositoryInterfaces;
 
 namespace ShopUnitOfWork.Uow
@@ -8,5 +9,7 @@ namespace ShopUnitOfWork.Uow
         void Save();
 
         T GetRepository<T>() where T : class, IRepository;
+
+        IDbContextTransaction BeginTransaction();
     }
 }

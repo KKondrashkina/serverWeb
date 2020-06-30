@@ -2,59 +2,55 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using ShopUnitOfWork.RepositoryInterfaces;
 
 namespace ShopUnitOfWork
 {
     public abstract class BaseEfRepository<T> : IRepository<T> where T : class
     {
-        protected DbContext db;
-        protected DbSet<T> dbSet;
+        protected DbContext Db;
+        protected DbSet<T> DbSet;
 
         protected BaseEfRepository(DbContext db)
         {
-            this.db = db;
-            dbSet = db.Set<T>();
-        }
-
-        public virtual IDbContextTransaction BeginTransaction()
-        {
-            return db.Database.BeginTransaction();
+            Db = db;
+            DbSet = db.Set<T>();
         }
 
         public virtual void Delete(T entity)
         {
-            if (db.Entry(entity).State == EntityState.Detached)
+            if (Db.Entry(entity).State == EntityState.Detached)
             {
-                dbSet.Attach(entity);
+                DbSet.Attach(entity);
             }
 
-            dbSet.Remove(entity);
+            DbSet.Remove(entity);
         }
 
         public virtual T[] GetAll()
         {
-            return dbSet.ToArray();
+            return DbSet.ToArray();
         }
 
         public virtual T GetById(int id)
         {
-            return dbSet.Find(id);
+            return DbSet.Find(id);
         }
 
         public virtual void Add(T entity)
         {
-            dbSet.Add(entity);
+            DbSet.Add(entity);
         }
 
         public virtual void AddRange(List<T> entities)
         {
-            dbSet.AddRange(entities);
+            DbSet.AddRange(entities);
         }
 
         public virtual void Update(T entity)
         {
-            dbSet.Attach(entity);
-            db.Entry(entity).State = EntityState.Modified;
+            DbSet.Attach(entity);
+            Db.Entry(entity).State = EntityState.Modified;
         }
     }
 }

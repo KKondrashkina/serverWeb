@@ -15,7 +15,7 @@ namespace ShopUnitOfWork.RepositoryClasses
 
         public List<Category> GetCategoryWithProductsAndOrders()
         {
-            return dbSet
+            return DbSet
                 .Include(c => c.ProductCategories)
                 .ThenInclude(pc => pc.Product)
                 .ThenInclude(p => p.ProductOrders)

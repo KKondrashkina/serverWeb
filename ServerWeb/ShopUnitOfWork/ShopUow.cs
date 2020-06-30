@@ -124,7 +124,7 @@ namespace ShopUnitOfWork
 
                 var removedProduct = productRepository.GetProductByName("Milk");
 
-                using (var dbTransaction = productRepository.BeginTransaction())
+                using (var dbTransaction = uow.BeginTransaction())
                 {
                     try
                     {

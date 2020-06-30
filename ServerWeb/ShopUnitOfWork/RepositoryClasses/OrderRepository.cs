@@ -15,7 +15,7 @@ namespace ShopUnitOfWork.RepositoryClasses
 
         public List<Order> GetOrdersWithProducts()
         {
-            return dbSet
+            return DbSet
                 .Include(o => o.ProductOrders)
                 .ThenInclude(po => po.Product)
                 .ToList();
