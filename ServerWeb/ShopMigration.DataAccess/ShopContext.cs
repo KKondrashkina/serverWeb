@@ -25,7 +25,7 @@ namespace ShopMigration.DataAccess
             var config = builder.Build();
             var connectionString = config.GetConnectionString("DefaultConnection");
 
-            optionsBuilder.UseSqlServer(connectionString, x => x.MigrationsAssembly("ShopMigration.DataAccess"));
+            optionsBuilder.UseSqlServer(connectionString);
             optionsBuilder.UseLazyLoadingProxies();
         }
 

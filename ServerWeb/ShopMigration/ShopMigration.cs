@@ -11,6 +11,8 @@ namespace ShopMigration
         {
             using (var db = new ShopContext())
             {
+                db.Database.Migrate();
+
                 var customers = db.Customers
                     .Include(c => c.Orders)
                     .ThenInclude(o => o.ProductOrders)
