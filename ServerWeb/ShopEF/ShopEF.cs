@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ShopEF.Entities;
@@ -156,21 +157,15 @@ namespace ShopEF
 
                 // __________________________________________________________________________________________________________
 
-                var productsIds = db.Products
-                    .Include(p => p.ProductOrders)
-                    .SelectMany(p => p.ProductOrders)
-                    .Select(p => p.ProductId)
-                    .ToList();
+                var maxCount = db.Products
+                    .Select(p => p.ProductOrders.Sum(po => po.ProductCount))
+                    .ToList()
+                    .Max();
 
-                var productId = productsIds
-                    .GroupBy(p => p)
-                    .OrderByDescending(o => o.Count())
-                    .FirstOrDefault().Key;
+                var productName = db.Products
+                    .FirstOrDefault(p => p.ProductOrders.Sum(po => po.ProductCount) == maxCount).Name;
 
                 Console.WriteLine("Самый часто покупаемый товар:");
-
-                var productName = db.Products.FirstOrDefault(p => p.Id == productId).Name;
-
                 Console.WriteLine(productName);
 
                 Console.WriteLine("__________________________________________");
@@ -178,28 +173,14 @@ namespace ShopEF
 
                 // __________________________________________________________________________________________________________
 
-                var customers = db.Customers
-                    .Include(c => c.Orders)
-                    .ThenInclude(o => o.ProductOrders)
-                    .ThenInclude(po => po.Product)
-                    .ToList();
-
-                foreach (var c in customers)
+                foreach (var c in db.Customers.ToList())
                 {
                     Console.WriteLine($"Покупатель: {c.FullName}");
 
-                    var sum = 0;
-                    var orders = c.Orders
-                        .Select(p => p.ProductOrders)
-                        .SelectMany(order => order)
-                        .ToList();
-
-                    foreach (var p in orders)
-                    {
-                        var price = p.Product.Price;
-                        var count = p.ProductCount;
-                        sum += price * count;
-                    }
+                    var sum = c.Orders
+                        .SelectMany(p => p.ProductOrders)
+                        .Select(p => p.ProductCount * p.Product.Price)
+                        .Sum();
 
                     Console.WriteLine($"Потрачено денег: {sum} рубля");
                     Console.WriteLine();
@@ -207,20 +188,14 @@ namespace ShopEF
 
                 // __________________________________________________________________________________________________________
 
-                var categories = db.Categories
-                     .Include(c => c.ProductCategories)
-                     .ThenInclude(pc => pc.Product)
-                     .ThenInclude(p => p.ProductOrders);
-
-                foreach (var c in categories)
+                foreach (var c in db.Categories.ToList())
                 {
                     Console.WriteLine($"Категория: {c.Name}");
 
-                    var products = c.ProductCategories;
-                    var productsCount = products
-                        .Select(p => p.Product.ProductOrders)
-                        .Select(o => o.Count)
-                        .Sum();
+                    var productsCount = c.ProductCategories.
+                        Select(c => c.Product)
+                        .Select(p =>
+                            p.ProductOrders.Select(po => po.ProductCount).Sum()).Sum();
 
                     Console.WriteLine($"Продуктов куплено: {productsCount}");
                     Console.WriteLine();
