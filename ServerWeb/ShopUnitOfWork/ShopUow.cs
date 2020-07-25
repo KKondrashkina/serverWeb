@@ -80,7 +80,7 @@ namespace ShopUnitOfWork
 
                 foreach (var o in orders1)
                 {
-                    Console.WriteLine($"Дата закака: {o.Date}");
+                    Console.WriteLine($"Дата заказа: {o.Date}");
 
                     var products1 = orderRepository.GetOrderProductsMoreExpensiveThan(100, o);
 
@@ -124,17 +124,16 @@ namespace ShopUnitOfWork
 
                 var removedProduct = productRepository.GetProductByName("Milk");
 
-                using (var dbTransaction = uow.BeginTransaction())
+                using (uow)
                 {
                     try
                     {
                         productRepository.Delete(removedProduct);
                         uow.Save();
-                        dbTransaction.Commit();
                     }
                     catch (Exception)
                     {
-                        dbTransaction.Rollback();
+                        uow.RollbackTransaction();
                     }
 
                 }

@@ -10,6 +10,8 @@ namespace ShopUnitOfWork.Uow
 
         T GetRepository<T>() where T : class, IRepository;
 
-        IDbContextTransaction BeginTransaction();
+        void BeginTransaction();
+
+        void RollbackTransaction();
     }
 }

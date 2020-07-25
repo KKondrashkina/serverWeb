@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using ShopUnitOfWork.RepositoryClasses;
@@ -10,23 +11,42 @@ namespace ShopUnitOfWork.Uow
     {
         private readonly DbContext _db;
 
+        private bool _isTransactionExist;
+
         public UnitOfWork(DbContext db)
         {
             _db = db;
         }
 
-        public virtual IDbContextTransaction BeginTransaction()
+        public virtual void BeginTransaction()
         {
-            return _db.Database.BeginTransaction();
+            _isTransactionExist = true;
+            _db.Database.BeginTransaction();
+        }
+
+        public virtual void RollbackTransaction()
+        {
+            _isTransactionExist = false;
+            _db.Database.RollbackTransaction();
         }
 
         public void Save()
         {
+            if (_isTransactionExist)
+            {
+                _db.Database.CommitTransaction();
+            }
+
             _db.SaveChanges();
         }
 
         public void Dispose()
         {
+            if (_isTransactionExist)
+            {
+                RollbackTransaction();
+            }
+
             _db.Dispose();
         }
 
